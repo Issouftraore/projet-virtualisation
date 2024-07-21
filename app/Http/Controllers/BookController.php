@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Category;
 use App\Models\client;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,8 @@ class BookController extends Controller
 
     public function create()
     {
-        return view('books.create');
+        $categories = Category::all();
+        return view('books.create' ,compact('categories'));
     }
 
     public function store(Request $request)
@@ -35,7 +37,8 @@ class BookController extends Controller
 
     public function show(Book $book)
     {
-        return view('books.show', compact('book'));
+        $clients = Client::all();
+        return view('books.show', compact('book','clients'));
     }
 
     public function edit(Book $book)
