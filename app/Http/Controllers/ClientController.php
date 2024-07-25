@@ -6,59 +6,19 @@ use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-/**
- * @OA\Tag(
- *     name="Clients",
- *     description="API Endpoints for managing clients"
- * )
- */
 class ClientController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/clients",
-     *     tags={"Clients"},
-     *     summary="Get all clients",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Client")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Bad request"
-     *     )
-     * )
-     */
     public function index()
     {
         $clients = Client::all();
-        return response()->json($clients);
+        return response()->json($clients, Response::HTTP_OK);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/clients",
-     *     tags={"Clients"},
-     *     summary="Create a new client",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Client")
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Client created",
-     *         @OA\JsonContent(ref="#/components/schemas/Client")
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Invalid input"
-     *     )
-     * )
-     */
+    public function create()
+    {
+        return response()->json(['message' => 'Form for creating a client'], Response::HTTP_OK);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -68,62 +28,19 @@ class ClientController extends Controller
         ]);
 
         $client = Client::create($request->all());
-        return response()->json($client, Response::HTTP_CREATED);
+        return response()->json(['message' => 'Client créé avec succès.', 'client' => $client], Response::HTTP_CREATED);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/clients/{client}",
-     *     tags={"Clients"},
-     *     summary="Get a specific client",
-     *     @OA\Parameter(
-     *         name="client",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(ref="#/components/schemas/Client")
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Client not found"
-     *     )
-     * )
-     */
     public function show(Client $client)
     {
-        return response()->json($client);
+        return response()->json($client, Response::HTTP_OK);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/clients/{client}",
-     *     tags={"Clients"},
-     *     summary="Update a specific client",
-     *     @OA\Parameter(
-     *         name="client",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/Client")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Client updated",
-     *         @OA\JsonContent(ref="#/components/schemas/Client")
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Invalid input"
-     *     )
-     * )
-     */
+    public function edit(Client $client)
+    {
+        return response()->json($client, Response::HTTP_OK);
+    }
+
     public function update(Request $request, Client $client)
     {
         $request->validate([
@@ -133,74 +50,24 @@ class ClientController extends Controller
         ]);
 
         $client->update($request->all());
-        return response()->json($client);
+        return response()->json(['message' => 'Client mis à jour avec succès.', 'client' => $client], Response::HTTP_OK);
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/clients/{client}",
-     *     tags={"Clients"},
-     *     summary="Delete a specific client",
-     *     @OA\Parameter(
-     *         name="client",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Client deleted"
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Client not found"
-     *     )
-     * )
-     */
     public function destroy(Client $client)
     {
         $client->delete();
-        return response()->json(['message' => 'Client deleted successfully']);
+        return response()->json(['message' => 'Client supprimé avec succès.'], Response::HTTP_OK);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/clients/{client}/borrowedBooks",
-     *     tags={"Clients"},
-     *     summary="Get borrowed books for a specific client",
-     *     @OA\Parameter(
-     *         name="client",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(property="client", ref="#/components/schemas/Client"),
-     *             @OA\Property(
-     *                 property="books",
-     *                 type="array",
-     *                 @OA\Items(ref="#/components/schemas/Book")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Client not found"
-     *     )
-     * )
-     */
     public function borrowedBooks($clientId)
-    {
-        $client = Client::findOrFail($clientId);
-        $books = $client->books;
+{
+    $client = Client::findOrFail($clientId);
+    dd($client); // Trouve le client ou renvoie une erreur 404 si non trouvé
+    $books = $client->books; // Récupère les livres empruntés par le client
 
-        return response()->json([
-            'client' => $client,
-            'books' => $books
-        ]);
-    }
+    return response()->json([
+        'client' => $client,
+        'books' => $books
+    ], Response::HTTP_OK);
+}
 }
