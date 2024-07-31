@@ -14,8 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
     apiPrefix: '/api',
   )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        
     })->create();
