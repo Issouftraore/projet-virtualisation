@@ -4,18 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class CategoryController extends Controller
 {
     public function index()
     {
         $categories = Category::all();
-        return view('categories.index', compact('categories'));
+        return response()->json($categories, Response::HTTP_OK);
     }
 
     public function create()
     {
-        return view('categories.create');
+        return response()->json(['message' => 'Form for creating a category'], Response::HTTP_OK);
     }
 
     public function store(Request $request)
@@ -24,18 +25,18 @@ class CategoryController extends Controller
             'name' => 'required|unique:categories,name',
         ]);
 
-        Category::create($request->all());
-        return redirect()->route('categories.index')->with('success', 'Catégorie créée avec succès.');
+        $category = Category::create($request->all());
+        return response()->json(['message' => 'Catégorie créée avec succès.', 'category' => $category], Response::HTTP_CREATED);
     }
 
     public function show(Category $category)
     {
-        return view('categories.show', compact('category'));
+        return response()->json($category, Response::HTTP_OK);
     }
 
     public function edit(Category $category)
     {
-        return view('categories.edit', compact('category'));
+        return response()->json($category, Response::HTTP_OK);
     }
 
     public function update(Request $request, Category $category)
@@ -45,12 +46,12 @@ class CategoryController extends Controller
         ]);
 
         $category->update($request->all());
-        return redirect()->route('categories.index')->with('success', 'Catégorie mise à jour avec succès.');
+        return response()->json(['message' => 'Catégorie mise à jour avec succès.', 'category' => $category], Response::HTTP_OK);
     }
 
     public function destroy(Category $category)
     {
         $category->delete();
-        return redirect()->route('categories.index')->with('success', 'Catégorie supprimée avec succès.');
+        return response()->json(['message' => 'Catégorie supprimée avec succès.'], Response::HTTP_OK);
     }
 }

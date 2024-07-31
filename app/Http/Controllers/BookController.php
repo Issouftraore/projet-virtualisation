@@ -6,19 +6,20 @@ use App\Models\Book;
 use App\Models\Category;
 use App\Models\Client;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class BookController extends Controller
 {
     public function index()
     {
         $books = Book::all();
-        return view('books.index', compact('books'));
+        return response()->json($books, 200);
     }
 
     public function create()
     {
         $categories = Category::all();
-        return view('books.create', compact('categories'));
+        return response()->json($categories, 200);
     }
 
     public function store(Request $request)
@@ -31,20 +32,20 @@ class BookController extends Controller
             'category_id' => 'required|exists:categories,id',
         ]);
 
-        Book::create($request->all());
-        return redirect()->route('books.index')->with('success', 'Livre créé avec succès.');
+        $book = Book::create($request->all());
+        return response()->json(['message' => 'Livre créé avec succès.', 'book' => $book], 201);
     }
 
     public function show(Book $book)
     {
         $clients = Client::all();
-        return view('books.show', compact('book', 'clients'));
+        return response()->json(['book' => $book, 'clients' => $clients], 200);
     }
 
     public function edit(Book $book)
     {
         $categories = Category::all();
-        return view('books.edit', compact('book', 'categories'));
+        return response()->json(['book' => $book, 'categories' => $categories], 200);
     }
 
     public function update(Request $request, Book $book)
@@ -58,13 +59,13 @@ class BookController extends Controller
         ]);
 
         $book->update($request->all());
-        return redirect()->route('books.index')->with('success', 'Livre mis à jour avec succès.');
+        return response()->json(['message' => 'Livre mis à jour avec succès.', 'book' => $book], 200);
     }
 
     public function destroy(Book $book)
     {
         $book->delete();
-        return redirect()->route('books.index')->with('success', 'Livre supprimé avec succès.');
+        return response()->json(['message' => 'Livre supprimé avec succès.'], 200);
     }
 
     public function borrow(Request $request, Book $book)
@@ -78,6 +79,6 @@ class BookController extends Controller
         // Attach the client to the book
         $book->clients()->attach($client->id);
 
-        return redirect()->route('books.show', $book)->with('success', 'Livre emprunté avec succès.');
+        return response()->json(['message' => 'Livre emprunté avec succès.'], 200);
     }
 }

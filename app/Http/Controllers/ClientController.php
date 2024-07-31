@@ -4,18 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class ClientController extends Controller
 {
     public function index()
     {
         $clients = Client::all();
-        return view('clients.index', compact('clients'));
+        return response()->json($clients, Response::HTTP_OK);
     }
 
     public function create()
     {
-        return view('clients.create');
+        return response()->json(['message' => 'Form for creating a client'], Response::HTTP_OK);
     }
 
     public function store(Request $request)
@@ -26,18 +27,18 @@ class ClientController extends Controller
             'birthday' => 'required|date',
         ]);
 
-        Client::create($request->all());
-        return redirect()->route('clients.index')->with('success', 'Client créé avec succès.');
+        $client = Client::create($request->all());
+        return response()->json(['message' => 'Client créé avec succès.', 'client' => $client], Response::HTTP_CREATED);
     }
 
     public function show(Client $client)
     {
-        return view('clients.show', compact('client'));
+        return response()->json($client, Response::HTTP_OK);
     }
 
     public function edit(Client $client)
     {
-        return view('clients.edit', compact('client'));
+        return response()->json($client, Response::HTTP_OK);
     }
 
     public function update(Request $request, Client $client)
@@ -49,19 +50,24 @@ class ClientController extends Controller
         ]);
 
         $client->update($request->all());
-        return redirect()->route('clients.index')->with('success', 'Client mis à jour avec succès.');
+        return response()->json(['message' => 'Client mis à jour avec succès.', 'client' => $client], Response::HTTP_OK);
     }
 
     public function destroy(Client $client)
     {
         $client->delete();
-        return redirect()->route('clients.index')->with('success', 'Client supprimé avec succès.');
+        return response()->json(['message' => 'Client supprimé avec succès.'], Response::HTTP_OK);
     }
 
-    public function borrowedBooks(Client $client)
-    {
-        $books = $client->books;
+    public function borrowedBooks($clientId)
+{
+    $client = Client::findOrFail($clientId);
+    dd($client); // Trouve le client ou renvoie une erreur 404 si non trouvé
+    $books = $client->books; // Récupère les livres empruntés par le client
 
-        return view('clients.borrowedBooks', compact('client', 'books'));
-    }
+    return response()->json([
+        'client' => $client,
+        'books' => $books
+    ], Response::HTTP_OK);
+}
 }
