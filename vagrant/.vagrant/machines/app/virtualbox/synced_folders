@@ -1,0 +1,1 @@
+{"virtualbox":{"/var/www/html":{"type":"virtualbox","guestpath":"/var/www/html","hostpath":"C:/solo/CoursMaster1/S2/Virtualisation et Cloud Computing/Projet/appli","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"C:/solo/CoursMaster1/S2/Virtualisation et Cloud Computing/Projet/solution","disabled":false,"__vagrantfile":true}}}
